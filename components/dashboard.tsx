@@ -25,7 +25,9 @@ import {
   AlertCircle,
   ExternalLink,
   Unplug,
+  LogOut,
 } from 'lucide-react';
+import { signOut } from '@/components/auth-form';
 import {
   SidebarProvider,
   Sidebar,
@@ -83,6 +85,7 @@ const navItems = [
   ['settings', 'Настройки', Settings],
 ] as const;
 type Workspace = {
+  email: string | null;
   settings: BotSettings;
   discord: { id: string; username: string } | null;
   guild: { id: string; name: string } | null;
@@ -238,15 +241,28 @@ export function Dashboard({ view }: { view: string[] }) {
         <SidebarFooter>
           <div className="sidebar-user">
             <span className="avatar purple small">
-              {(data?.discord?.username || 'Вы').slice(0, 1)}
+              {(data?.discord?.username || data?.email || 'Вы').slice(0, 1)}
             </span>
             <div>
-              <b>{data?.discord?.username || 'Локальный кабинет'}</b>
+              <b>
+                {data?.discord?.username || data?.email || 'Локальный кабинет'}
+              </b>
               <small>{data?.plan === 'pro' ? 'NEXO Pro' : 'Тариф Basic'}</small>
             </div>
             <span className="tiny-badge">
               {data?.plan === 'pro' ? 'PRO' : 'BASIC'}
             </span>
+            {data?.email && (
+              <button
+                type="button"
+                className="sidebar-logout"
+                onClick={signOut}
+                aria-label="Выйти из аккаунта"
+                title="Выйти"
+              >
+                <LogOut size={15} />
+              </button>
+            )}
           </div>
         </SidebarFooter>
       </Sidebar>

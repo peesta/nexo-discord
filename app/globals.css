@@ -1845,6 +1845,22 @@ h2 {
 }
 .sidebar-user > div {
   flex: 1;
+  min-width: 0;
+}
+.sidebar-user b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar-logout {
+  display: inline-flex;
+  padding: 6px;
+  border-radius: 6px;
+  color: #8e9f7d;
+}
+.sidebar-logout:hover {
+  color: #e7edde;
+  background: #2a3820;
 }
 .sidebar-user b {
   font-size: 12px;
@@ -3116,6 +3132,51 @@ h2 {
   line-height: 1.8;
   color: #a3b191;
   margin-bottom: 30px;
+}
+.auth-form {
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 26px;
+  text-align: left;
+}
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #303b26;
+  border-radius: 9px;
+  background: #10140f;
+}
+.auth-tabs button {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  color: #8e9f7d;
+  font-size: 14px;
+}
+.auth-tabs button.active {
+  background: #2a3820;
+  color: #e7edde;
+}
+.auth-form .field-label {
+  margin-top: 18px;
+}
+.auth-form .button {
+  width: 100%;
+  margin-top: 24px;
+}
+.auth-form .button:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+.auth-error {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border: 1px solid #6b2d2d;
+  border-radius: 7px;
+  background: #2a1414;
+  color: #ffb4a8;
+  font-size: 13px;
 }
 .auth-gate .text-link {
   font-size: 13px;

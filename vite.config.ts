@@ -34,7 +34,18 @@ const localBindingConfig = {
     : [],
 };
 
-export default defineConfig(async () => {
+// `vinext build --mode cloudflare` targets the public Cloudflare Workers demo
+// described in wrangler.cloudflare.json (real D1 database, DEMO_MODE on).
+async function cloudflareDeployConfig() {
+  const { default: deploy } = await import('./wrangler.cloudflare.json');
+  if (!deploy.d1_databases[0]?.database_id)
+    throw new Error(
+      'wrangler.cloudflare.json has no database_id. Run Deploy-Cloudflare.cmd, it creates the D1 database first.',
+    );
+  return { ...deploy, main: localBindingConfig.main };
+}
+
+export default defineConfig(async ({ mode }) => {
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= 'false';
@@ -54,7 +65,10 @@ export default defineConfig(async () => {
       sites(),
       cloudflare({
         viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },
-        config: localBindingConfig,
+        config:
+          mode === 'cloudflare'
+            ? await cloudflareDeployConfig()
+            : localBindingConfig,
       }),
     ],
   };

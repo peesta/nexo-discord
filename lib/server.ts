@@ -16,10 +16,13 @@ type Bindings = {
   STRIPE_PRICE_ID?: string;
   BOT_API_URL?: string;
   BOT_API_KEY?: string;
+  DEMO_MODE?: string;
 };
 export const bindings = () => env as unknown as Bindings;
 export const db = () => bindings().DB;
 export const now = () => new Date().toISOString();
+// Public demo deploy: the language model only runs locally, so AI is off.
+export const demoMode = () => bindings().DEMO_MODE === 'true';
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -36,11 +39,6 @@ export function json(data: unknown, status = 200) {
       'X-Content-Type-Options': 'nosniff',
     },
   });
-}
-export function identity(req: Request) {
-  const id = req.headers.get('oai-authenticated-user-id');
-  if (!id) throw new ApiError(401, 'Войдите, чтобы открыть личный кабинет.');
-  return id;
 }
 export function checkOrigin(req: Request) {
   const origin = req.headers.get('origin');
@@ -131,6 +129,11 @@ export async function lm(
   agent = false,
   stream = false,
 ) {
+  if (demoMode() && !bindings().LM_BASE_URL)
+    throw new ApiError(
+      503,
+      'В демо-версии сайта AI-ответы отключены: языковая модель работает только локально.',
+    );
   const config = lmConfig();
   const model = agent ? config.agent : config.chat;
   const auth = bindings().LM_API_KEY

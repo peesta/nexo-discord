@@ -5,5 +5,5 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AuthGate returnTo="/dashboard">{children}</AuthGate>;
+  return <AuthGate>{children}</AuthGate>;
 }

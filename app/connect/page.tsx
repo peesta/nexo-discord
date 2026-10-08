@@ -7,7 +7,7 @@ export default function ConnectPage() {
   return (
     <>
       <Header />
-      <AuthGate returnTo="/connect">
+      <AuthGate>
         <Connect />
       </AuthGate>
     </>

@@ -3,7 +3,6 @@ import {
   db,
   now,
   json,
-  identity,
   workspace,
   checkOrigin,
   body,
@@ -26,6 +25,7 @@ import {
   type Proposal,
 } from '@/lib/product';
 import { paymentRoute } from '@/lib/payments';
+import { authRoute, identity, accountFromCookie } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 type Row = Record<string, any>;
@@ -87,6 +87,7 @@ async function route(req: Request) {
   const method = req.method;
   if (path === 'payments/webhook') return paymentRoute(req, path, null);
   if (method === 'POST') checkOrigin(req);
+  if (path.startsWith('auth/') && method === 'POST') return authRoute(req, path);
   if (path === 'chat/quota' && method === 'GET') {
     const ip = req.headers.get('cf-connecting-ip') || 'local';
     const row = await db()
@@ -134,7 +135,7 @@ async function route(req: Request) {
         : input.mode === 'personality'
           ? 'personality'
           : 'playground';
-    const owner = mode === 'playground' ? null : identity(req);
+    const owner = mode === 'playground' ? null : await identity(req);
     const ip = req.headers.get('cf-connecting-ip') || 'local';
     await rate(`chat:minute:${owner || ip}`, 6, 60000);
     let used = 0;
@@ -200,7 +201,7 @@ async function route(req: Request) {
       },
     });
   }
-  const owner = identity(req);
+  const owner = await identity(req);
   if (path === 'workspace' && method === 'GET') {
     const w = await workspace(owner);
     const rows = await db()
@@ -215,7 +216,9 @@ async function route(req: Request) {
       )
       .bind(owner)
       .all<Row>();
+    const account = await accountFromCookie(req.headers.get('cookie'));
     return json({
+      email: account?.email || null,
       settings: w.settings,
       discord: w.discord_id
         ? { id: w.discord_id, username: w.discord_name }

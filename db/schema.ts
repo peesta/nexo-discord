@@ -80,7 +80,23 @@ export const oauthStates = sqliteTable('oauth_states', {
   owner: text('owner').notNull(),
   expires: integer('expires').notNull(),
 });
-export const paymentEvents = sqliteTable('payment_events', {
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+export const sessions = sqliteTable(
+  'sessions',
+  {
+    tokenHash: text('token_hash').primaryKey(),
+    userId: text('user_id').notNull(),
+    expires: integer('expires').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('idx_sessions_user').on(t.userId)],
+);
+export const paymentEvents =sqliteTable('payment_events', {
   id: text('id').primaryKey(),
   createdAt: text('created_at').notNull(),
 });
