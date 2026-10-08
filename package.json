@@ -2,12 +2,15 @@
   "name": "sites-project",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=22.13.0"
   },
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
+    "build:cloudflare": "vinext build --mode cloudflare",
+    "release:cloudflare": "wrangler d1 migrations apply nexo-db --remote --config wrangler.cloudflare.json && wrangler deploy --config dist/server/wrangler.json",
     "deploy:cloudflare": "node scripts/deploy-cloudflare.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
